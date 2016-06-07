@@ -30,6 +30,7 @@ def create_patch_batch(path, offset, batch_size):
                 segmentation = preprocessing.segment_prostate(data, tra_origin)
                 annotation_list = preprocessing.create_annotation_list(tra_annotations)
                 patches, targets = preprocessing.create_patches(data, annotation_list, hyperParameters.patch_size, segmentation)
+                # visualizer.visualize_annotations(data, annotation_list, directory)
                 if patch_list is None:
                     patch_list = patches
                     target_list = targets
@@ -89,10 +90,8 @@ train_fn = theano.function([input_var, target_var], loss, updates=updates)
 val_fn = theano.function([input_var, target_var], [test_loss, test_acc])
 
 num_epochs = hyperParameters.epochs
-
-print("Starting training...")
 # We iterate over epochs:
-for epoch in range(num_epochs):
+for epoch in range(1):
     # In each epoch, we do a full pass over the training data:
     train_err = 0
     train_batches = 0
@@ -102,15 +101,16 @@ for epoch in range(num_epochs):
     directory_list = os.listdir(path)
     max_batch_number = int(math.floor(len(directory_list)/hyperParameters.batch_size))
 
-    for batch_number in range(0, max_batch_number):
+    for batch_number in range(0, 1):
         print 'Loading Data'
         patches, targets = create_patch_batch(path,batch_number*hyperParameters.batch_size,min(hyperParameters.batch_size, len(directory_list)-batch_number*10))
         x_train = patches
         y_train = targets
         x_test = patches
         y_test = targets
+        print("Starting training batch " + str(batch_number))
 
-        for batch in iterate_minibatches(x_train, y_train, hyperParameters.mini_batch, shuffle=True):
+        for batch in iterate_minibatches(x_train, y_train, 1, shuffle=True):
             inputs, targets = batch
             train_err += train_fn(inputs, targets)
             err, acc = (val_fn(inputs, targets))

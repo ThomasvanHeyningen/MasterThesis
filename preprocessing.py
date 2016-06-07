@@ -49,12 +49,11 @@ def create_patches(data, annotation_list, patch_size, ellipse_data):
     name = 0
     for slice in range(0, shape[0]):
         for annotation in annotation_list:
-            radius_squared = (annotation['radius']**2 - ((annotation['z'] - slice)*15)**2)
-            if(radius_squared > 0):
-                radius = math.sqrt(radius_squared)
-                for column in range(int(annotation['x']-radius), int(annotation['x']+radius)):
-                    for row in range(int(annotation['y']-radius), int(annotation['y']+radius)):
-                        patch = data[slice,None,column:column+patch_size,row:row+patch_size]
+            if(-2 < annotation['z']-slice < 2):
+                radius = annotation['radius']
+                for column in range(int(annotation['x']-radius), int(annotation['x']+radius-hyperParameters.patch_size)):
+                    for row in range(int(annotation['y']-radius), int(annotation['y']+radius-hyperParameters.patch_size)):
+                        patch = data[slice,None,column:column+hyperParameters.patch_size,row:row+hyperParameters.patch_size]
                         patches.append(patch)
                         targets.append(int(1))
                         visualizer.visualize_patches(column, row, 1, data[slice],name)
@@ -77,11 +76,11 @@ def create_patches(data, annotation_list, patch_size, ellipse_data):
 def create_annotation_list(annotations):
     annotation_list = []
     for annotation in annotations:
-        circle = {'x': 0, 'y':0, 'z':0, 'radius':15}
+        circle = {'x': 0, 'y':0, 'z':0, 'radius':20}
 
         circle['x'] = annotation[0]
         circle['y'] = annotation[1]
-        circle['z'] = annotation[2]
+        circle['z'] = round(annotation[2])
 
         annotation_list.append(circle)
 

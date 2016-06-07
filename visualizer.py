@@ -28,10 +28,8 @@ def visualize_annotations(data, annotation_list, patient_id):
         plt.imshow(data[slice], cmap='Greys_r')
         fig = plt.gcf()
         for annotation in annotation_list:
-            radius_squared = (annotation['radius']**2 - ((annotation['z'] - slice)*15)**2)
-            if(radius_squared > 0):
-                radius = math.sqrt(radius_squared)
-                circle = plt.Circle((annotation['x'],annotation['y']),radius,color='R',fill=False)
+            if(-2 < annotation['z']-slice < 2):
+                circle = plt.Circle((annotation['x'],annotation['y']),annotation['radius'],color='R',fill=False)
                 ax = plt.gca()
                 fig.gca().add_artist(circle)
         if not os.path.exists('../output/annotations/'+patient_id):
@@ -62,7 +60,7 @@ def visualize_patches(x, y, target, data, name):
     else:
         colour = 'R'
     #Since the rectangle drawing starts at the bottom left corner, x-radius, y-radius
-    square = plt.Rectangle((x-16, y-16), 32, 32,alpha=1,color=colour,fill=False)
+    square = plt.Rectangle((x, y), 32, 32,alpha=1,color=colour,fill=False)
     ax = plt.gca()
     fig.gca().add_artist(square)
 
